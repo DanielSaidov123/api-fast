@@ -23,7 +23,7 @@ export const registerUser = async (req, res) => {
       password: passwordHash,
       role: role ? role : "user",
     });
-    res.status(200).json(newUser);
+    res.status(200).json({message : newUser});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
