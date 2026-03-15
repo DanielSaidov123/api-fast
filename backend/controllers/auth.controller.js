@@ -11,7 +11,6 @@ export const registerUser = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    console.log(user);
     if (user) {
       res.status(400).json({ message: "email uniqe" });
     }
