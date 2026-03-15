@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import { connectToMongoDB } from "./DB/conectNongoDB.js";
+import auth from "./routes/auth.route.js"
 dotenv.config();
 
 const PORT = process.env.PORT;
@@ -17,6 +18,8 @@ app.use(cookieParser());
 app.get("/api", (req, res) => {
   res.status(200).json("Welcome ");
 });
+
+app.use("/api/auth" ,auth)
 
 app.listen(PORT, () => {
   connectToMongoDB();
