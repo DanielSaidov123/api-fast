@@ -1,22 +1,67 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { loginService, registerServis } from "../service/authService";
 
-interface AuthState {
-    user: { role: "user" | "admin" } | null;
-    loginUser: (role: "user" | "admin") => void;
-    logout: () => void;
+interface User {
+  _id: string;
+  fullName: string;
+  email: string;
+  role: "admin" | "user";
+  post: [];
+  createdAt: string;
+  updatedAt: string;
 }
 
+interface AuthState {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+
+  login: (email: string, password: string) => Promise<void>;
+  registerStore: (
+    fullName: string,
+    email: string,
+    password: string,
+    role: string,
+  ) => Promise<void>;
+  logout: () => void;
+}
 export const useAuth = create<AuthState>()(
-    persist(
-        (set) => ({
-            user: null,
-            loginUser: (role) => set({ user: { role } }),
-            logout: () => set({ user: null }),
-        }),
-        {
-            name: "auth-storage",
-            partialize: (state) => ({ user: state.user }),
-        },
-    ),
+  persist(
+    (set) => ({
+      user: null,
+      loading: false,
+      error: null,
+
+      login: async (email, password) => {
+        set({ loading: true, error: null });
+
+        const result = await loginService(email, password);
+
+        if (result.success) {
+          set({ user: result.user.user, loading: false });
+        } else {
+          set({ error: result.message, loading: false });
+        }
+      },
+
+      registerStore: async (fullName, email, password, role) => {
+        set({ loading: true, error: null });
+
+        const result = await registerServis(fullName, email, password, role);
+
+        if (result.success) {
+          set({ loading: false });
+        } else {
+          set({ error: result.message, loading: false });
+        }
+      },
+
+      logout: () => set({ user: null }),
+    }),
+    {
+      name: "auth-storage",
+      partialize: (state) => ({ user: state.user }),
+    },
+  ),
 );

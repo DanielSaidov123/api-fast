@@ -7,20 +7,22 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
-    const { user } =  useAuth();
-    const location = useLocation();
+  const { user } = useAuth();
+  const location = useLocation();
 
-    if (!user) {
-        return <Navigate to="/" state={{ from: location }} replace />;
-    }
+  if (!user) {
+    console.log("No user, redirecting to /");
+    return <Navigate to="/" state={{ from: location }} replace />;
+  }
 
-    const hasAccess = allowedRoles.includes(user.role);
+  console.log("User role:", user.role);
+  const hasAccess = allowedRoles.includes(user.role);
 
-    if (!hasAccess) {
-        return <Navigate to={user.role === "admin" ? "/HomeAdmin" : "/"} replace />;
-    }
+  if (!hasAccess) {
+    return <Navigate to={user.role === "admin" ? "/HomeAdmin" : "/"} replace />;
+  }
 
-    return <Outlet />;
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

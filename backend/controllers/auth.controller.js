@@ -7,12 +7,12 @@ export const registerUser = async (req, res) => {
     const { fullName, email, password, role } = req.body;
 
     if (!fullName || !email || !password) {
-      return res.status(400).json({ message: "All fildes are required" });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
-    const user = await User.findOne({ email });
-    if (user) {
-      res.status(400).json({ message: "email uniqe" });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email must be unique" });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -21,11 +21,13 @@ export const registerUser = async (req, res) => {
       fullName,
       email,
       password: passwordHash,
-      role: role ? role : "user",
+      role: role && ["user", "admin"].includes(role) ? role : "user",
     });
-    res.status(200).json({message : newUser});
+
+    return res.status(201).json({ success: true, user: newUser });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -59,7 +61,7 @@ export const login = async (req, res) => {
       secure: false,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.status(200).json({message : "login true" ,role :  user.role})
+    res.status(200).json({message : "login true" ,user})
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

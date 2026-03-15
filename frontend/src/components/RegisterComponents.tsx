@@ -1,12 +1,8 @@
 import React, { useState } from "react";
-import { useRequest } from "../hooks/useRequedt";
-import { registerApi } from "../api/axios";
+import { useAuth } from "../store/useAuth";
 
-interface RegisterType {
-    data:{
-        message : object
-    }
-}
+ 
+ 
 
 export function RegisterComponents() {
   const [register, setRegister] = useState({
@@ -15,10 +11,11 @@ export function RegisterComponents() {
     password: "",
     role: "user",
   });
-  const { request, loading, error, success } = useRequest<RegisterType>();
+
+  const {registerStore , error , loading} = useAuth()
   async function hndleSubmit(e: React.FormEvent) {
     e.preventDefault();
-     request(()=>registerApi(register))
+    registerStore(register.fullName , register.email,register.password,register.role)
      
   }
 
@@ -57,7 +54,6 @@ export function RegisterComponents() {
         </select>
         <button type="submit">{loading?<p>loading...</p>:<p>create user</p>}</button>
         {error && <p>{error}</p>}
-        {success && <p>user create</p>}
       </form>
     </div>
   );
