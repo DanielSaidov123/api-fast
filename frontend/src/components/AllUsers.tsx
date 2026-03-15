@@ -75,7 +75,7 @@ export default function AllUsers() {
                 role: editUser.role,
               };
               updateUserByID(editUser.id, data);
-              setEditUser(null); // סוגר את הטופס
+              setEditUser(null); 
             }}
           >
             Save

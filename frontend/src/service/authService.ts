@@ -9,7 +9,6 @@ export async function loginService(email: string, password: string) {
       success: true,
       user: res.data,
     };
-
   } catch (error) {
     const message = axios.isAxiosError(error)
       ? error.response?.data?.message || "login error"
@@ -19,20 +18,24 @@ export async function loginService(email: string, password: string) {
   }
 }
 
-export async function registerServis(fullName :string,email: string, password: string , role:string) {
+export async function registerServis(
+  fullName: string,
+  email: string,
+  password: string,
+  role: string,
+) {
   try {
-    await registerApi({ fullName , email , password , role});
+    const res = await registerApi({ fullName, email, password, role });
 
     return {
       success: true,
+      user: res.data,
     };
-
   } catch (error) {
     const message = axios.isAxiosError(error)
-      ?error.response?.data?.message || "rgister error"
+      ? error.response?.data?.message || "rgister error"
       : "unexpected error";
 
     return { success: false, message };
   }
 }
-

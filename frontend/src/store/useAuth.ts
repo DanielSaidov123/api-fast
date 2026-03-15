@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { loginService, registerServis } from "../service/authService";
-
+import { useUsersSrore } from "./useUsersStore";
 interface User {
   _id: string;
   fullName: string;
@@ -46,16 +46,21 @@ export const useAuth = create<AuthState>()(
       },
 
       registerStore: async (fullName, email, password, role) => {
-        set({ loading: true, error: null });
+  set({ loading: true, error: null });
 
-        const result = await registerServis(fullName, email, password, role);
+  const result = await registerServis(fullName, email, password, role);
 
-        if (result.success) {
-          set({ loading: false });
-        } else {
-          set({ error: result.message, loading: false });
-        }
-      },
+  if (result.success) {
+    set({ loading: false });
+    
+    const addUserToList = useUsersSrore.getState().users;
+    useUsersSrore.setState({
+      users: [...addUserToList, result.user], 
+    });
+  } else {
+    set({ error: result.message, loading: false });
+  }
+},
 
       logout: () => set({ user: null }),
     }),
